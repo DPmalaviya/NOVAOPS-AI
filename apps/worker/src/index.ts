@@ -4,6 +4,8 @@ import { chunkText, SAMPLE_DOCUMENT } from '@novaops/rag'
 const EMBEDDING_MODEL = '@cf/qwen/qwen3-embedding-0.6b'
 const EMBEDDING_DIMENSIONS = 1024
 const NAMESPACE = 'sample'
+const MAX_DAILY_REQUESTS_PER_IP = 25
+const MAX_DAILY_REQUESTS_GLOBAL = 200
 
 export interface Env { DB: D1Database; VECTOR: VectorizeIndex; AI: Ai }
 type EmbeddingResponse = { data?: number[][] | number[]; shape?: number[] }
@@ -32,6 +34,17 @@ async function hashText(text: string): Promise<string> {
   const bytes = new TextEncoder().encode(text)
   const digest = await crypto.subtle.digest('SHA-256', bytes)
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('')
+}
+
+async function reserveDailyRequest(env: Env, request: Request): Promise<boolean> {
+  const day = new Date().toISOString().slice(0, 10)
+  const address = request.headers.get('cf-connecting-ip') || 'unknown-client'
+  const clientBucket = await hashText(`${day}:${address}`)
+  const sql = 'INSERT INTO request_limits (bucket, day_utc, request_count) VALUES (?, ?, 1) ON CONFLICT(bucket, day_utc) DO UPDATE SET request_count = request_count + 1 WHERE request_count < ? RETURNING request_count'
+  const client = await env.DB.prepare(sql).bind(clientBucket, day, MAX_DAILY_REQUESTS_PER_IP).first<{ request_count: number }>()
+  if (!client) return false
+  const global = await env.DB.prepare(sql).bind('global', day, MAX_DAILY_REQUESTS_GLOBAL).first<{ request_count: number }>()
+  return global !== null
 }
 
 async function indexSample(env: Env): Promise<Response> {
@@ -65,12 +78,13 @@ async function indexSample(env: Env): Promise<Response> {
   }
 }
 
-async function retrieve(env: Env, body: unknown): Promise<Response> {
+async function retrieve(env: Env, body: unknown, request: Request): Promise<Response> {
   if (!body || typeof body !== 'object' || !('question' in body)) return error('INVALID_JSON', 'A JSON body with question is required.', 400)
   const { question, topK } = body as { question?: unknown; topK?: unknown }
   if (typeof question !== 'string' || !question.trim() || question.length > 2000) return error('INVALID_QUESTION', 'question must be 1–2000 characters.', 400)
   if (topK !== undefined && (typeof topK !== 'number' || !Number.isInteger(topK) || topK < 1 || topK > 8)) return error('INVALID_TOP_K', 'topK must be an integer from 1 to 8.', 400)
   try {
+    if (!await reserveDailyRequest(env, request)) return error('RATE_LIMITED', 'The public sample retrieval limit has been reached. Try again tomorrow.', 429)
     const queryVector = await embed(env, question.trim())
     const result = await env.VECTOR.query(queryVector, { topK: (topK as number | undefined) ?? 5, returnMetadata: 'all', filter: { namespace: NAMESPACE } })
     const matches = result.matches ?? []
@@ -102,7 +116,7 @@ export default { async fetch(request: Request, env: Env): Promise<Response> {
   if (request.method === 'POST' && url.pathname === '/api/retrieve') {
     let body: unknown
     try { body = await request.json() } catch { return error('INVALID_JSON', 'A JSON body is required.', 400) }
-    return retrieve(env, body)
+    return retrieve(env, body, request)
   }
   return error('NOT_FOUND', 'Route not found.', 404)
 } } satisfies ExportedHandler<Env>

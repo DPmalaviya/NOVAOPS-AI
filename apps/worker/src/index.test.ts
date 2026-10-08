@@ -6,12 +6,22 @@ function makeEnv() {
   const chunks = new Map<string, { id: string; document_id: string; filename: string; chunk_index: number; text: string }>()
   const vectors = new Map<string, { id: string; values: number[]; metadata: Record<string, string | number> }>()
   let embeddings = 0
+  const limits = new Map<string, number>()
   const db = {
     prepare(sql: string) {
       const values: unknown[] = []
       return {
         bind(...args: unknown[]) { values.push(...args); return this },
-        async first() { return docs.get(String(values[0])) ?? null },
+        async first() {
+          if (sql.startsWith('INSERT INTO request_limits')) {
+            const key = `${String(values[0])}:${String(values[1])}`
+            const current = limits.get(key) ?? 0
+            if (current >= Number(values[2])) return null
+            limits.set(key, current + 1)
+            return { request_count: current + 1 }
+          }
+          return docs.get(String(values[0])) ?? null
+        },
         async all() {
           return { results: [...chunks.values()].filter((row) => values.includes(row.id)) }
         },
@@ -56,6 +66,16 @@ describe('Worker RAG retrieval foundation', () => {
     expect(await response.json()).toMatchObject({ embeddingModel: '@cf/qwen/qwen3-embedding-0.6b', evidence: [{ source: 'novaops-rag-principles.md', chunkId: 'sample-rag-principles-0000', score: 0.91 }] })
     const invalid = await worker.fetch(new Request('https://novaops.test/api/retrieve', { method: 'POST', body: JSON.stringify({ question: '  ', topK: 20 }) }), env)
     expect(invalid.status).toBe(400)
+  })
+
+  it('caps requests per client and fails closed after the limit', async () => {
+    const { env, stats } = makeEnv()
+    await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)
+    let last: Response | undefined
+    for (let i = 0; i < 26; i += 1) last = await worker.fetch(new Request('https://novaops.test/api/retrieve', { method: 'POST', headers: { 'cf-connecting-ip': '192.0.2.4' }, body: JSON.stringify({ question: 'supported evidence?' }) }), env)
+    expect(last?.status).toBe(429)
+    expect(await last?.json()).toMatchObject({ code: 'RATE_LIMITED' })
+    expect(stats().embeddings).toBe(26) // one indexing embedding + 25 permitted query embeddings
   })
 
   it('returns a safe unavailable response for malformed embedding output', async () => {

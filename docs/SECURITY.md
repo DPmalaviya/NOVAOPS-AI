@@ -20,3 +20,6 @@ Documents are untrusted data. Retrieval context cannot modify system rules, requ
 
 ## Remaining limitations
 Browser-side extraction, if adopted, cannot ensure a source is non-sensitive and may not preserve all PDF structure. OCR and encrypted/scanned PDFs are out of scope until separately implemented and tested.
+
+## Retrieval request cap
+The sample retrieval route applies a D1-backed rolling-by-UTC-day counter with an initial cap of 25 requests per hashed client address per day and 200 total per day. Raw client IP addresses are not stored. If the limit store is unavailable, retrieval fails closed. This is a portfolio-demo guardrail, not a complete abuse-prevention or identity system; deployment must also use platform-level controls and be monitored. The sample indexing endpoint only accepts an empty POST and skips embeddings when the unchanged sample is already indexed.

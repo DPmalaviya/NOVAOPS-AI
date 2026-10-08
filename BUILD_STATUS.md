@@ -40,11 +40,11 @@ NOT STARTED · IN PROGRESS · BLOCKED · FAILED · PASSED
 ### Blockers / limitations
 - No public Worker or frontend deployment yet. Do not represent this branch build as publicly deployed.
 - Current end-to-end UI is retrieval-only; there is no generated answer, user document upload or GitHub connector yet.
-- The public sample endpoint and query API need abuse/rate limiting before any public deployment.
+- A D1-backed 25-per-client-per-UTC-day and 200-global-per-day retrieval cap is implemented and unit-tested; it is not a substitute for platform-level abuse controls.
 - No OCR; file parsing and user upload are later stages.
 
 ### Next checks
-- Run `/api/index-sample` and `/api/retrieve` against real Worker bindings in an isolated deployment or verified remote-dev session.
+- Run `/api/index-sample` and `/api/retrieve` against real Worker bindings in an isolated deployment or verified remote-dev session, including the new D1 request-counter statements.
 - Verify changed-document stale-vector deletion and query hydration on real Cloudflare resources.
 - Add and test abuse limits before exposing public endpoints.
 
