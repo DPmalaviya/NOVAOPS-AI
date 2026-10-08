@@ -1,0 +1,6 @@
+name = "novaops-ai-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-08"
+workers_dev = true
+# Stage 1 deliberately provisions no paid resources and no persistent bindings.
+# Add D1, Vectorize, R2 or Queue bindings only after current account limits are verified.

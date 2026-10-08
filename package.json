@@ -1,0 +1,16 @@
+{
+  "name": "novaops-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A free-first, evidence-led RAG workspace portfolio project.",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspace=@novaops/web",
+    "dev:worker": "npm run dev --workspace=@novaops/worker",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "engines": { "node": ">=20.0.0" }
+}

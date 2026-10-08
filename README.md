@@ -1,50 +1,45 @@
 # NovaOps AI
 
-Repository: `DPmalaviya/NOVAOPS-AI`
+NovaOps AI is a free-first, evidence-led RAG knowledge workspace built as an AI engineering portfolio project. Its intended flow is straightforward: add public or synthetic documents, index them, retrieve evidence, generate a grounded answer, and inspect the cited source passages.
 
-This repository starts with a lightweight UI prototype for NovaOps AI, a public RAG portfolio application.
+> **Current status: Stage 1 — foundation.** The old static prototype is preserved in `prototype/`. The new React app deliberately presents only live foundation states: the API health check and an honest empty workspace. Upload, sync, retrieval, generation, research, metrics, and provider status are not yet implemented and are not represented as live features.
 
-## Core product flow
+## Planned architecture
 
-1. Add or synchronize documents
-2. Parse, chunk, embed, and index them
-3. Ask questions
-4. Retrieve evidence
-5. Generate grounded answers
-6. Inspect citations
-
-## Provider order
-
-1. Gemini
-2. Cloudflare Workers AI
-3. Ollama Cloud (`nemotron-3-nano` preferred)
-4. Retrieval-only evidence fallback
-
-## Important
-
-The current front-end is intentionally a prototype.
-
-- Chat answers are simulated.
-- Uploaded files remain in the browser.
-- System metrics are demo placeholders.
-- Production implementation must replace simulated behavior with tested services.
-
-## Run the prototype
-
-```bash
-python3 -m http.server 8080
+```text
+Documents / public GitHub
+          ↓
+ Parser → Chunker → Embeddings → Vector store
+                              ↓
+Web app → Worker API → Query embedding → Top-K evidence
+                                           ↓
+                              Provider router → Grounded answer → Citations
 ```
 
-Open `http://localhost:8080`.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/RAG_DESIGN.md](docs/RAG_DESIGN.md), [docs/FREE_TIER.md](docs/FREE_TIER.md), and [BUILD_STATUS.md](BUILD_STATUS.md) for the current verified scope and limitations.
 
-## UI direction
+## Local development
 
-The visual system is intentionally restrained:
+Requirements: Node 20+ and npm.
 
-- warm off-white canvas
-- graphite typography
-- muted steel-blue accents
-- minimal status color
-- no bright gradients or flashy dashboard decoration
+```bash
+npm install
+npm run dev
+npm run dev:worker
+```
 
-The goal is a credible AI engineering product rather than a marketing-heavy demo.
+The web app runs through Vite. The Worker health endpoint is available through Wrangler locally after dependencies are installed.
+
+```bash
+npm run typecheck
+npm run test
+npm run build
+```
+
+## Security posture
+
+The public deployment will accept **public, synthetic, or otherwise non-sensitive** content only. No API keys belong in frontend code, repository files, issue content, or logs. Before enabling each provider or storage service, verify its current pricing, account requirements, and actual configured limits. See [docs/SECURITY.md](docs/SECURITY.md).
+
+## License
+
+Not yet selected.
