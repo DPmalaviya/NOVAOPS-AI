@@ -1,1 +1,1 @@
-{"name":"@novaops/rag","private":true,"version":"0.1.0","type":"module","exports":{".":"./src/index.ts"},"scripts":{"typecheck":"tsc --noEmit --pretty false"},"dependencies":{"@novaops/shared":"0.1.0"},"devDependencies":{"typescript":"latest"}}
+{"name":"@novaops/rag","private":true,"version":"0.1.0","type":"module","exports":{".":"./src/index.ts"},"scripts":{"typecheck":"tsc --noEmit --pretty false","test":"vitest run"},"dependencies":{"@novaops/shared":"0.1.0"},"devDependencies":{"typescript":"latest","vitest":"latest"}}
