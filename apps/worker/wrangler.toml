@@ -2,5 +2,15 @@ name = "novaops-ai-api"
 main = "src/index.ts"
 compatibility_date = "2026-10-08"
 workers_dev = true
-# Stage 1 deliberately provisions no paid resources and no persistent bindings.
-# Add D1, Vectorize, R2 or Queue bindings only after current account limits are verified.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "novaops-ai-metadata"
+database_id = "7ee285a3-076c-415a-88e4-be3be1ca86fd"
+
+[[vectorize]]
+binding = "VECTOR"
+index_name = "novaops-ai-v1"
+
+[ai]
+binding = "AI"
