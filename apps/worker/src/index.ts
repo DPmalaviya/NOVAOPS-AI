@@ -85,12 +85,24 @@ async function retrieve(env: Env, body: unknown, request: Request): Promise<Resp
   if (topK !== undefined && (typeof topK !== 'number' || !Number.isInteger(topK) || topK < 1 || topK > 8)) return error('INVALID_TOP_K', 'topK must be an integer from 1 to 8.', 400)
   try {
     if (!await reserveDailyRequest(env, request)) return error('RATE_LIMITED', 'The public sample retrieval limit has been reached. Try again tomorrow.', 429)
-    const queryVector = await embed(env, question.trim())
-    const result = await env.VECTOR.query(queryVector, { topK: (topK as number | undefined) ?? 5, returnMetadata: 'all', filter: { namespace: NAMESPACE } })
-    const matches = result.matches ?? []
-    if (!matches.length) return json({ query: question.trim(), embeddingModel: EMBEDDING_MODEL, evidence: [], message: 'No matching sample evidence was found.' })
-    const ids = matches.map((match) => match.id)
-    const placeholders = ids.map(() => '?').join(',')
+  } catch {
+    return error('RATE_LIMIT_STORE_UNAVAILABLE', 'The request limit store is temporarily unavailable.', 503)
+  }
+  let queryVector: number[]
+  try { queryVector = await embed(env, question.trim()) } catch {
+    return error('EMBEDDING_UNAVAILABLE', 'The configured embedding service is temporarily unavailable.', 503)
+  }
+  let matches: VectorizeMatches['matches']
+  try {
+    const result = await env.VECTOR.query(queryVector, { topK: (topK as number | undefined) ?? 5 })
+    matches = result.matches ?? []
+  } catch {
+    return error('VECTOR_QUERY_UNAVAILABLE', 'Semantic search is temporarily unavailable.', 503)
+  }
+  if (!matches.length) return json({ query: question.trim(), embeddingModel: EMBEDDING_MODEL, evidence: [], message: 'No matching sample evidence was found.' })
+  const ids = matches.map((match) => match.id)
+  const placeholders = ids.map(() => '?').join(',')
+  try {
     const rows = await env.DB.prepare(`SELECT c.id, c.document_id, d.filename, c.chunk_index, c.text FROM chunks c JOIN documents d ON d.id = c.document_id AND d.namespace = c.namespace WHERE c.namespace = ? AND c.id IN (${placeholders})`).bind(NAMESPACE, ...ids).all<{ id: string; document_id: string; filename: string; chunk_index: number; text: string }>()
     const byId = new Map((rows.results ?? []).map((row) => [row.id, row]))
     const evidence: Citation[] = matches.flatMap((match) => {
@@ -99,7 +111,7 @@ async function retrieve(env: Env, body: unknown, request: Request): Promise<Resp
     })
     return json({ query: question.trim(), embeddingModel: EMBEDDING_MODEL, evidence, message: evidence.length ? undefined : 'Vector results had no matching authorized metadata; no evidence is shown.' })
   } catch {
-    return error('RETRIEVAL_UNAVAILABLE', 'Embedding or vector retrieval is temporarily unavailable.', 503)
+    return error('METADATA_LOOKUP_UNAVAILABLE', 'Evidence metadata is temporarily unavailable.', 503)
   }
 }
 

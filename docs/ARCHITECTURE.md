@@ -10,9 +10,9 @@ React/Vite → Worker API → Workers AI Qwen3 embeddings
                       └──── retrieved chunk text / source citation
 ```
 
-The Worker currently exposes `GET /api/health`, `POST /api/index-sample`, and `POST /api/retrieve`. Sample indexing hashes content, chunks text deterministically, embeds with `@cf/qwen/qwen3-embedding-0.6b`, upserts stable IDs to Vectorize, and writes matching source text/metadata to D1. Repeating an unchanged sample indexing call skips embeddings. Retrieval embeds the query, restricts search to the public sample namespace, and hydrates matching IDs from D1 before returning excerpts. This is retrieval-only: no generation occurs.
+The Worker currently exposes `GET /api/health`, `POST /api/index-sample`, and `POST /api/retrieve`. Sample indexing hashes content, chunks text deterministically, embeds with `@cf/qwen/qwen3-embedding-0.6b`, upserts stable IDs to Vectorize, and writes matching source text/metadata to D1. Repeating an unchanged sample indexing call skips embeddings. Retrieval embeds the query, searches the single-purpose sample index, and hydrates only matching IDs authorized in the `sample` D1 namespace before returning excerpts. Vectorize metadata filtering was not used in the live smoke because the basic binding query worked while requesting all metadata did not. Do not add other namespaces to this shared sample index until namespace-filter behavior is verified. This is retrieval-only: no generation occurs.
 
-Cloudflare account resources created specifically for NovaOps: D1 `novaops-ai-metadata` (UUID `7ee285a3-076c-415a-88e4-be3be1ca86fd`) and Vectorize `novaops-ai-v1` (1,024 dimensions, cosine). The real Vectorize API v2 REST path returned “index not found”; v1/legacy REST endpoints worked. Worker binding methods remain the intended production access path and require a live Worker smoke test.
+Cloudflare account resources created specifically for NovaOps: D1 `novaops-ai-metadata` (UUID `7ee285a3-076c-415a-88e4-be3be1ca86fd`) and Vectorize `novaops-ai-v1` (1,024 dimensions, cosine). The real Vectorize API v2 REST path returned “index not found”; v1/legacy REST endpoints worked. A temporary Workers.dev smoke Worker verified binding-based indexing and retrieval against the actual resources and was removed afterward.
 
 ## Intended V1 topology
 

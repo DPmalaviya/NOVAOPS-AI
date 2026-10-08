@@ -21,32 +21,34 @@ NOT STARTED · IN PROGRESS · BLOCKED · FAILED · PASSED
 - Responsive breakpoints exist in CSS; browser-based visual inspection could not reach the sandbox preview host and is not claimed.
 
 ## Stage 2 — Retrieval without LLM
-**Status:** IN PROGRESS
+**Status:** PASSED (retrieval-only sample acceptance; uploads and parsing remain later-stage work)
 
 ### Completed
 - Verified the Cloudflare account had no pre-existing D1 databases or Vectorize indexes before creating NovaOps-specific resources.
 - Created D1 `novaops-ai-metadata` and Vectorize `novaops-ai-v1` (1,024 dimensions, cosine metric); no paid upgrade or billing configuration was enabled.
 - Executed a live Workers AI embedding request using `@cf/qwen/qwen3-embedding-0.6b`; it returned a 1,024-dimensional vector.
-- Created D1 `documents`, `chunks`, and `ingestion_runs` tables and the namespace/document index.
-- Upserted a public synthetic sample vector and D1 metadata; a live semantic query returned the expected source chunk as Top-1 with score 0.671606322.
-- Implemented deterministic chunking, `/api/index-sample`, `/api/retrieve`, metadata hydration, stable chunk identifiers and unchanged-content skipping.
-- Added mocked Worker tests for indexing, idempotent skip, source-backed retrieval, input validation and malformed embedding failure.
+- Created D1 `documents`, `chunks`, `ingestion_runs`, and `request_limits` tables, plus the namespace/document index.
+- Implemented deterministic chunking, `/api/index-sample`, `/api/retrieve`, metadata hydration, stable chunk identifiers, stale-vector removal and unchanged-content skipping.
+- Added D1-backed rate caps: 25 requests per hashed client bucket per UTC day and 200 globally per UTC day; raw IP values are not persisted.
+- Added Worker tests for indexing, idempotent skip, source-backed retrieval, rate limits, input validation and malformed embedding failure.
 
-### Current verification evidence
-- The latest local run passed lint, type checks, five substantive tests (three Worker flow tests and two chunker tests), Vite build, and Wrangler dry-run with D1, Vectorize and AI bindings. A placeholder web test was removed rather than counting it as meaningful coverage.
-- Live Cloudflare proof currently covers direct model inference, Vectorize upsert/query, and D1 writes, not execution of the just-written Worker route on the hosted account.
-- Vectorize v2 REST endpoint returned `index not found` for the created index; the legacy REST endpoint accepted upsert and query. Re-indexed the exact sample file under deterministic ID `sample-rag-principles-0000`, removed the stale prior vector, queried a related question, and hydrated the matching full chunk text from D1. Worker binding compatibility is verified by API shape documentation and dry-run, but its live deployed behavior remains to be exercised.
+### Verification evidence
+- Latest local run passed lint, type checks, six substantive tests (four Worker flow tests and two chunker tests), Vite build, and Wrangler dry-run with D1, Vectorize and AI bindings.
+- Deployed a temporary public `novaops-ai-stage2-smoke` Worker with only the dedicated NovaOps bindings to test the real Worker runtime, then removed it after verification.
+- Live Worker health returned 200. `/api/index-sample` indexed the sample; repeat calls returned `unchanged` with zero re-embedded chunks.
+- Live Worker `/api/retrieve` returned 200 for a known query, with expected ID `sample-rag-principles-0000`, matching D1 source filename/text, and real Vectorize similarity score `0.6624384`.
+- Invalid live question returned 400. D1 rate limiting accepted test retrieval requests and stored hashed client bucket/global counters.
+- A live Vectorize binding query initially failed when requesting all metadata; a basic query worked. Source ownership is checked by hydrating result IDs from D1 within the sample namespace.
+- Vectorize v2 REST endpoint returned `index not found`; legacy REST upsert/query worked. The smoke Worker verified binding access to the actual index.
 
-### Blockers / limitations
-- No public Worker or frontend deployment yet. Do not represent this branch build as publicly deployed.
-- Current end-to-end UI is retrieval-only; there is no generated answer, user document upload or GitHub connector yet.
-- A D1-backed 25-per-client-per-UTC-day and 200-global-per-day retrieval cap is implemented and unit-tested; it is not a substitute for platform-level abuse controls.
-- No OCR; file parsing and user upload are later stages.
+### Limitations
+- No public production app or frontend deployment. The temporary smoke Worker was removed; do not represent the branch as publicly deployed.
+- Current UI and API are retrieval-only. There is no generated answer, user document upload, parser, or GitHub connector yet.
+- The D1 request cap is a baseline guardrail, not a substitute for broader platform-level abuse controls.
+- No OCR; scanned/encrypted PDF behavior remains out of scope pending an implementation decision.
 
-### Next checks
-- Run `/api/index-sample` and `/api/retrieve` against real Worker bindings in an isolated deployment or verified remote-dev session, including the new D1 request-counter statements.
-- Verify changed-document stale-vector deletion and query hydration on real Cloudflare resources.
-- Add and test abuse limits before exposing public endpoints.
+### Acceptance
+Known semantic questions retrieved the intended real sample source chunk through the Worker route, embedding model, Vectorize and D1. Retrieval-only sample acceptance passes. Stage 2 does not claim file upload, multi-document parsing, generation, evaluation, or a publicly available website.
 
 ## Stages 3–10
 **Status:** NOT STARTED

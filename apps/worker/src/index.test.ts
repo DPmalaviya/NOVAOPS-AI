@@ -83,6 +83,6 @@ describe('Worker RAG retrieval foundation', () => {
     const malformedEnv = { ...env, AI: { run: async () => ({ data: [[0.2, 0.3]] }) } } as unknown as Env
     const response = await worker.fetch(new Request('https://novaops.test/api/retrieve', { method: 'POST', body: JSON.stringify({ question: 'question' }) }), malformedEnv)
     expect(response.status).toBe(503)
-    expect(await response.json()).toMatchObject({ code: 'RETRIEVAL_UNAVAILABLE' })
+    expect(await response.json()).toMatchObject({ code: 'EMBEDDING_UNAVAILABLE' })
   })
 })
