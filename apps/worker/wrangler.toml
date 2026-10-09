@@ -4,8 +4,8 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Bindings to provision (see docs/DEPLOYMENT.md):
-#   wrangler d1 create novaops
-#   wrangler vectorize create novaops-index --dimensions=768 --metric=cosine
+#   wrangler d1 create novaops-ai-metadata
+#   wrangler vectorize create novaops-ai-index --dimensions=768 --metric=cosine
 # The Workers AI embedder (bge-base) produces 768 dimensions.
 
 [ai]
@@ -13,12 +13,12 @@ binding = "AI"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "novaops"
-database_id = "REPLACE_WITH_YOUR_D1_ID"
+database_name = "novaops-ai-metadata"
+database_id = "7ee285a3-076c-415a-88e4-be3be1ca86fd"
 
 [[vectorize]]
 binding = "VECTORIZE"
-index_name = "novaops-index"
+index_name = "novaops-ai-index"
 
 [vars]
 EMBEDDER = "workers-ai"
