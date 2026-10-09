@@ -78,3 +78,8 @@ No generation, uploads, GitHub synchronization, research synthesis, evaluation m
 - Added five frontend behavior tests; removed passWithNoTests.
 - Latest local acceptance: lint, typecheck, 25 tests, Vite build, Wrangler dry run and diff check passed.
 - New abstention semantics remain live-unverified. Browser acceptance and Stages 4–10 are not complete.
+
+### Evaluation harness preparation
+- Created 25 labeled synthetic cases and a bounded stdlib Python endpoint evaluator.
+- Dataset validation and six Python evaluator tests passed; existing 25 application tests and local acceptance checks passed.
+- Live dataset evaluation NOT EXECUTED; no accuracy or broad grounding result claimed.
