@@ -155,3 +155,8 @@ footer{text-align:center;padding:32px 0 0;color:var(--muted);font-size:9px}
   .system-grid{grid-template-columns:1fr}.span-2{grid-column:auto}
   .doc-row{grid-template-columns:36px 1fr auto}
 }
+.answer-text ul{margin:6px 0 10px 20px;color:var(--text-2);line-height:1.7}
+.answer-text li{margin:3px 0}
+.cite-inline{display:inline-block;font:inherit;font-size:.78em;font-weight:650;color:var(--accent-strong);background:var(--accent-soft);border:1px solid var(--line);border-radius:6px;padding:0 5px;margin:0 1px;cursor:pointer;vertical-align:baseline;line-height:1.5}
+.cite-inline:hover{background:var(--panel-2)}
+.cite-inline.static{cursor:default}

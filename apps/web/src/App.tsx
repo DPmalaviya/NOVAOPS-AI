@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { api, fileToBase64, type DocRecord, type EvidenceItem, type QueryResult } from './api';
 
 type Page = 'workspace' | 'documents' | 'research' | 'system';
@@ -40,7 +40,41 @@ function EvidencePanel({ evidence, active, onSelect }: { evidence: EvidenceItem[
   );
 }
 
-function AnswerBody({ result }: { result: QueryResult }) {
+/** Renders a model answer as readable prose: paragraphs, real bullet lists,
+ * bold, and [Sn] markers as clickable citation chips (plain text rendering
+ * made markdown answers look like junk). */
+function AnswerText({ text, onCite }: { text: string; onCite?: (marker: string) => void }) {
+  const inline = (s: string, keyBase: string) =>
+    s.split(/(\[S\d+\]|\*\*[^*]+\*\*)/g).filter(Boolean).map((part, i) => {
+      const cite = part.match(/^\[(S\d+)\]$/);
+      if (cite) {
+        return onCite ? (
+          <button key={`${keyBase}-${i}`} type="button" className="cite-inline" title="Open this source in the evidence panel" onClick={() => onCite(cite[1])}>[{cite[1]}]</button>
+        ) : (
+          <span key={`${keyBase}-${i}`} className="cite-inline static">[{cite[1]}]</span>
+        );
+      }
+      const bold = part.match(/^\*\*([^*]+)\*\*$/);
+      if (bold) return <strong key={`${keyBase}-${i}`}>{bold[1]}</strong>;
+      return <span key={`${keyBase}-${i}`}>{part}</span>;
+    });
+
+  const blocks: ReactNode[] = [];
+  let para: string[] = [];
+  let list: string[] = [];
+  const flushPara = () => { if (para.length) { const t = para.join(' '); blocks.push(<p key={`p${blocks.length}`}>{inline(t, `p${blocks.length}`)}</p>); para = []; } };
+  const flushList = () => { if (list.length) { const items = [...list]; blocks.push(<ul key={`u${blocks.length}`}>{items.map((li, i) => <li key={i}>{inline(li, `u${blocks.length}-${i}`)}</li>)}</ul>); list = []; } };
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (/^[*-]\s+/.test(line)) { flushPara(); list.push(line.replace(/^[*-]\s+/, '')); }
+    else if (!line) { flushPara(); flushList(); }
+    else { flushList(); para.push(line); }
+  }
+  flushPara(); flushList();
+  return <div className="answer-text">{blocks}</div>;
+}
+
+function AnswerBody({ result, onCite }: { result: QueryResult; onCite?: (marker: string) => void }) {
   if (result.insufficientEvidence) {
     return (
       <div className="notice warn" role="status">
@@ -64,7 +98,7 @@ function AnswerBody({ result }: { result: QueryResult }) {
   }
   return (
     <div>
-      <div className="answer-text">{(result.answer ?? '').split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}</div>
+      <AnswerText text={result.answer ?? ''} onCite={onCite} />
       <div className="answer-meta">
         <span>{result.provider} · {result.model}</span>
         <span>Retrieval {result.timings.retrievalMs} ms · Generation {result.timings.generationMs} ms</span>
@@ -128,7 +162,7 @@ function Workspace() {
                   {m.result?.provider && <span>{m.result.provider} · {m.result.model}</span>}
                   {m.result?.retrievalOnly && <span>evidence only</span>}
                 </div>
-                {m.role === 'user' ? <p>{m.text}</p> : m.result ? <AnswerBody result={m.result} /> : null}
+                {m.role === 'user' ? <p>{m.text}</p> : m.result ? <AnswerBody result={m.result} onCite={(marker) => { setEvidence(m.result!.evidence); setActiveEv(Math.max(0, Number(marker.slice(1)) - 1)); }} /> : null}
               </div>
             </div>
           ))}
@@ -280,7 +314,7 @@ function Research() {
           <div className="card brief-card">
             {result.insufficientEvidence || result.retrievalOnly ? <AnswerBody result={result} /> : (
               <>
-                <div className="answer-text">{(result.answer ?? '').split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}</div>
+                <AnswerText text={result.answer ?? ''} />
                 <div className="answer-meta"><span>{result.provider} · {result.model}</span><span>{result.chunksSearched ?? 0} chunks searched</span></div>
                 <div className="citations">{result.citations.map((c) => <span key={c.marker} className="cite-chip">[{c.marker}] {c.filename}{c.heading ? ` — ${c.heading}` : ''}</span>)}</div>
               </>
