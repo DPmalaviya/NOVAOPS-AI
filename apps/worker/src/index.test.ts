@@ -80,6 +80,14 @@ describe('Worker RAG retrieval foundation', () => {
     expect(await response.json()).toMatchObject({ mode: 'generated', provider: 'workers-ai', answer: 'NovaOps searches embeddings for relevant chunks [1].', citations: [{ marker: 1, source: 'novaops-rag-principles.md' }] })
   })
 
+  it('returns explicit insufficient evidence without fabricated citations', async () => {
+    const { env } = makeEnv()
+    await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)
+    const answerEnv = { ...env, AI: { run: async (model: string) => model === '@cf/qwen/qwen3-embedding-0.6b' ? { data: [Array.from({ length: 1024 }, () => 0.01)] } : { response: 'The indexed evidence is insufficient to answer this.' } } } as unknown as Env
+    const response = await worker.fetch(new Request('https://novaops.test/api/ask', { method: 'POST', body: JSON.stringify({ question: 'What is the capital of France?' }) }), answerEnv)
+    expect(await response.json()).toMatchObject({ mode: 'insufficient_evidence', answer: null, citations: [], message: 'The indexed evidence is insufficient to answer this.' })
+  })
+
   it('withholds a generated answer with invalid citation markers', async () => {
     const { env } = makeEnv()
     await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)

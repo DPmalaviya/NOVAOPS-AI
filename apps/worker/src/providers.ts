@@ -92,6 +92,10 @@ export async function generateWithFallback(env: ProviderEnv, system: string, use
   return { events }
 }
 
+export function isEvidenceAbstention(text: string): boolean {
+  return text.trim().replace(/[.!]+$/, '').toLowerCase() === 'the indexed evidence is insufficient to answer this'
+}
+
 export function validateCitationMarkers(text: string, evidenceCount: number): number[] | null {
   const markers = [...text.matchAll(/\[(\d+)\]/g)].map((match) => Number(match[1]))
   if (!markers.length || markers.some((marker) => !Number.isInteger(marker) || marker < 1 || marker > evidenceCount)) return null

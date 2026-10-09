@@ -1,8 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { buildGroundedPrompt, generateWithFallback, validateCitationMarkers, type ProviderEnv } from './providers'
+import { buildGroundedPrompt, generateWithFallback, isEvidenceAbstention, validateCitationMarkers, type ProviderEnv } from './providers'
 
 describe('grounded generation safeguards', () => {
   afterEach(() => vi.unstubAllGlobals())
+  it('recognizes only the explicit abstention, not claims appended to it', () => {
+    expect(isEvidenceAbstention('The indexed evidence is insufficient to answer this.')).toBe(true)
+    expect(isEvidenceAbstention('The indexed evidence is insufficient to answer this. Paris is the capital.')).toBe(false)
+  })
   it('parses Gemini text parts and discards thought parts', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: 'private thought', thought: true }, { text: 'Supported answer [1].' }] } }] }), { status: 200 })))
     const env = { GEMINI_API_KEY: 'synthetic-test-key', GEMINI_MODEL: 'synthetic-test-model', AI: { run: vi.fn() } } as unknown as ProviderEnv

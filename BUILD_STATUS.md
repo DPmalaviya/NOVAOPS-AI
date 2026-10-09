@@ -71,3 +71,10 @@ No generation, uploads, GitHub synchronization, research synthesis, evaluation m
 - Worker disabled/deleted afterward; scripts listing empty. No production deployment.
 - Added Gemini parsing and 401/429/503/timeout mock tests. Explicit insufficient-evidence semantics and frontend tests remain pending.
 - Sanitized live outputs: docs/verification/stage3-smoke/.
+
+### Autonomous hardening checkpoint
+- Added explicit insufficient_evidence API handling and route regression coverage.
+- Fixed zero-overlap chunker forward progress.
+- Added five frontend behavior tests; removed passWithNoTests.
+- Latest local acceptance: lint, typecheck, 25 tests, Vite build, Wrangler dry run and diff check passed.
+- New abstention semantics remain live-unverified. Browser acceptance and Stages 4–10 are not complete.

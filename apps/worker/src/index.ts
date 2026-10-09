@@ -1,6 +1,6 @@
 import { APP_VERSION, type HealthResponse } from '@novaops/shared'
 import { chunkText, SAMPLE_DOCUMENT } from '@novaops/rag'
-import { buildGroundedPrompt, generateWithFallback, validateCitationMarkers, type ProviderEnv } from './providers'
+import { buildGroundedPrompt, generateWithFallback, isEvidenceAbstention, validateCitationMarkers, type ProviderEnv } from './providers'
 
 const EMBEDDING_MODEL = '@cf/qwen/qwen3-embedding-0.6b'
 const EMBEDDING_DIMENSIONS = 1024
@@ -137,6 +137,7 @@ export default { async fetch(request: Request, env: Env): Promise<Response> {
     const prompt = buildGroundedPrompt(source.query, source.evidence)
     const generation = await generateWithFallback(env, prompt.system, prompt.user)
     if (!generation.result) return json({ mode: 'retrieval_only', query: source.query, answer: null, citations: source.evidence.map((item, index) => ({ marker: index + 1, ...item })), embeddingModel: source.embeddingModel, providerEvents: generation.events, message: 'Generation is temporarily unavailable; retrieved evidence is shown without a generated answer.' })
+    if (isEvidenceAbstention(generation.result.text)) return json({ mode: 'insufficient_evidence', query: source.query, answer: null, citations: [], evidence: source.evidence, embeddingModel: source.embeddingModel, provider: generation.result.provider, model: generation.result.model, providerEvents: generation.events, message: 'The indexed evidence is insufficient to answer this.' })
     const markers = validateCitationMarkers(generation.result.text, source.evidence.length)
     if (!markers) return json({ mode: 'retrieval_only', query: source.query, answer: null, citations: source.evidence.map((item, index) => ({ marker: index + 1, ...item })), embeddingModel: source.embeddingModel, provider: generation.result.provider, model: generation.result.model, latencyMs: generation.result.latencyMs, providerEvents: generation.events, message: 'The generated response lacked valid citation markers, so the answer was withheld; retrieved evidence is shown.' })
     return json({ mode: 'generated', query: source.query, answer: generation.result.text, citations: markers.map((marker) => ({ marker, ...source.evidence[marker - 1] })), embeddingModel: source.embeddingModel, provider: generation.result.provider, model: generation.result.model, latencyMs: generation.result.latencyMs, inputTokens: generation.result.inputTokens, outputTokens: generation.result.outputTokens, providerEvents: generation.events })
