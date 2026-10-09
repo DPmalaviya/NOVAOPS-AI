@@ -50,7 +50,17 @@ NOT STARTED · IN PROGRESS · BLOCKED · FAILED · PASSED
 ### Acceptance
 Known semantic questions retrieved the intended real sample source chunk through the Worker route, embedding model, Vectorize and D1. Retrieval-only sample acceptance passes. Stage 2 does not claim file upload, multi-document parsing, generation, evaluation, or a publicly available website.
 
-## Stages 3–10
+## Stage 3 — Grounded generation
+**Status:** IN PROGRESS (local implementation verified; live route acceptance pending)
+
+- Implemented /api/ask, provider routing, final-answer-only parsing and evidence citation marker checks.
+- Gemini requires explicit model/key; optional Ollama requires model/key. Neither is live-verified.
+- Workers AI fallback is implemented; new /api/ask route has not been smoke-tested live.
+- Latest local checks: lint, typecheck, 12 tests, build and diff check passed. Frontend has no behavioral tests.
+- Citation marker validation is not claim-level grounding verification.
+- See docs/AI_HANDOFF.md for resource IDs, modified files, blockers and exact resumption action.
+
+## Stages 4–10
 **Status:** NOT STARTED
 
 No generation, uploads, GitHub synchronization, research synthesis, evaluation metrics, performance claims or production deployment is claimed as complete.

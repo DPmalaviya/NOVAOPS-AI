@@ -1,5 +1,6 @@
 import { APP_VERSION, type HealthResponse } from '@novaops/shared'
 import { chunkText, SAMPLE_DOCUMENT } from '@novaops/rag'
+import { buildGroundedPrompt, generateWithFallback, validateCitationMarkers, type ProviderEnv } from './providers'
 
 const EMBEDDING_MODEL = '@cf/qwen/qwen3-embedding-0.6b'
 const EMBEDDING_DIMENSIONS = 1024
@@ -7,7 +8,7 @@ const NAMESPACE = 'sample'
 const MAX_DAILY_REQUESTS_PER_IP = 25
 const MAX_DAILY_REQUESTS_GLOBAL = 200
 
-export interface Env { DB: D1Database; VECTOR: VectorizeIndex; AI: Ai }
+export interface Env extends ProviderEnv { DB: D1Database; VECTOR: VectorizeIndex }
 type EmbeddingResponse = { data?: number[][] | number[]; shape?: number[] }
 type Citation = { chunkId: string; documentId: string; source: string; chunkIndex: number; excerpt: string; score: number }
 
@@ -125,10 +126,20 @@ export default { async fetch(request: Request, env: Env): Promise<Response> {
     if (request.headers.get('content-length') && Number(request.headers.get('content-length')) > 100) return error('INVALID_BODY', 'This endpoint accepts an empty body only.', 400)
     return indexSample(env)
   }
-  if (request.method === 'POST' && url.pathname === '/api/retrieve') {
+  if (request.method === 'POST' && (url.pathname === '/api/retrieve' || url.pathname === '/api/ask')) {
     let body: unknown
     try { body = await request.json() } catch { return error('INVALID_JSON', 'A JSON body is required.', 400) }
-    return retrieve(env, body, request)
+    if (url.pathname === '/api/retrieve') return retrieve(env, body, request)
+    const retrieval = await retrieve(env, body, request)
+    if (!retrieval.ok) return retrieval
+    const source = await retrieval.json() as { query: string; embeddingModel: string; evidence: Citation[]; message?: string }
+    if (!source.evidence.length) return json({ mode: 'retrieval_only', query: source.query, answer: null, citations: [], embeddingModel: source.embeddingModel, message: source.message || 'No evidence was retrieved; no answer was generated.' })
+    const prompt = buildGroundedPrompt(source.query, source.evidence)
+    const generation = await generateWithFallback(env, prompt.system, prompt.user)
+    if (!generation.result) return json({ mode: 'retrieval_only', query: source.query, answer: null, citations: source.evidence.map((item, index) => ({ marker: index + 1, ...item })), embeddingModel: source.embeddingModel, providerEvents: generation.events, message: 'Generation is temporarily unavailable; retrieved evidence is shown without a generated answer.' })
+    const markers = validateCitationMarkers(generation.result.text, source.evidence.length)
+    if (!markers) return json({ mode: 'retrieval_only', query: source.query, answer: null, citations: source.evidence.map((item, index) => ({ marker: index + 1, ...item })), embeddingModel: source.embeddingModel, provider: generation.result.provider, model: generation.result.model, latencyMs: generation.result.latencyMs, providerEvents: generation.events, message: 'The generated response lacked valid citation markers, so the answer was withheld; retrieved evidence is shown.' })
+    return json({ mode: 'generated', query: source.query, answer: generation.result.text, citations: markers.map((marker) => ({ marker, ...source.evidence[marker - 1] })), embeddingModel: source.embeddingModel, provider: generation.result.provider, model: generation.result.model, latencyMs: generation.result.latencyMs, inputTokens: generation.result.inputTokens, outputTokens: generation.result.outputTokens, providerEvents: generation.events })
   }
   return error('NOT_FOUND', 'Route not found.', 404)
 } } satisfies ExportedHandler<Env>

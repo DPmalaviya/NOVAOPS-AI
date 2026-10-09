@@ -68,6 +68,26 @@ describe('Worker RAG retrieval foundation', () => {
     expect(invalid.status).toBe(400)
   })
 
+  it('generates an answer only when provider output cites retrieved evidence', async () => {
+    const { env } = makeEnv()
+    await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)
+    const answerEnv = { ...env, AI: { run: async (model: string, input: unknown) => {
+      if (model === '@cf/qwen/qwen3-embedding-0.6b') return { data: [Array.from({ length: 1024 }, () => 0.01)], shape: [1, 1024] }
+      return { choices: [{ message: { content: 'NovaOps searches embeddings for relevant chunks [1].', reasoning_content: 'not for display' } }], usage: { prompt_tokens: 40, completion_tokens: 12 } }
+    } } } as unknown as Env
+    const response = await worker.fetch(new Request('https://novaops.test/api/ask', { method: 'POST', body: JSON.stringify({ question: 'How does retrieval work?' }) }), answerEnv)
+    expect(response.status).toBe(200)
+    expect(await response.json()).toMatchObject({ mode: 'generated', provider: 'workers-ai', answer: 'NovaOps searches embeddings for relevant chunks [1].', citations: [{ marker: 1, source: 'novaops-rag-principles.md' }] })
+  })
+
+  it('withholds a generated answer with invalid citation markers', async () => {
+    const { env } = makeEnv()
+    await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)
+    const answerEnv = { ...env, AI: { run: async (model: string) => model === '@cf/qwen/qwen3-embedding-0.6b' ? { data: [Array.from({ length: 1024 }, () => 0.01)] } : { choices: [{ message: { content: 'Unsupported claims [9].' } }] } } } as unknown as Env
+    const response = await worker.fetch(new Request('https://novaops.test/api/ask', { method: 'POST', body: JSON.stringify({ question: 'How does retrieval work?' }) }), answerEnv)
+    expect(await response.json()).toMatchObject({ mode: 'retrieval_only', answer: null, message: 'The generated response lacked valid citation markers, so the answer was withheld; retrieved evidence is shown.' })
+  })
+
   it('caps requests per client and fails closed after the limit', async () => {
     const { env, stats } = makeEnv()
     await worker.fetch(new Request('https://novaops.test/api/index-sample', { method: 'POST' }), env)
