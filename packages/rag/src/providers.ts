@@ -46,7 +46,7 @@ export class GeminiProvider implements GenerationProvider {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: opts.system }] },
           contents: [{ role: 'user', parts: [{ text: opts.user }] }],
-          generationConfig: { maxOutputTokens: opts.maxTokens ?? 1024, temperature: 0.2 },
+          generationConfig: { maxOutputTokens: opts.maxTokens ?? 2048, temperature: 0.2, thinkingConfig: { thinkingBudget: 0 } },
         }) },
       opts.timeoutMs ?? 20000,
     );
@@ -69,7 +69,7 @@ export class WorkersAIProvider implements GenerationProvider {
   ) {}
   async generate(opts: GenerateOptions): Promise<ProviderResult> {
     const t0 = Date.now();
-    const input = { messages: [{ role: 'system', content: opts.system }, { role: 'user', content: opts.user }], max_tokens: opts.maxTokens ?? 1024, temperature: 0.2 };
+    const input = { messages: [{ role: 'system', content: opts.system }, { role: 'user', content: opts.user }], max_tokens: opts.maxTokens ?? 2048, temperature: 0.2 };
     try {
       let res: any;
       if (this.binding) {
@@ -99,7 +99,7 @@ export class OllamaCloudProvider implements GenerationProvider {
     const t0 = Date.now();
     const r = await fetchWithTimeout(`${this.baseUrl}/api/chat`,
       { method: 'POST', headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: this.model, stream: false, messages: [{ role: 'system', content: opts.system }, { role: 'user', content: opts.user }], options: { num_predict: opts.maxTokens ?? 1024, temperature: 0.2 } }) },
+        body: JSON.stringify({ model: this.model, stream: false, messages: [{ role: 'system', content: opts.system }, { role: 'user', content: opts.user }], options: { num_predict: opts.maxTokens ?? 2048, temperature: 0.2 } }) },
       opts.timeoutMs ?? 25000);
     const text = await r.text();
     if (!r.ok) throw classifyHttp(r.status, text);
