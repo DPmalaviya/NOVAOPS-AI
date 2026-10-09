@@ -3,7 +3,7 @@
 Checkpoint: October 8, 2026 (America/Chicago). Read AGENTS.md first. This file is the repository-native continuity record for Codex and Hyperagent; no chat history is required.
 
 ## Current stage
-Stage 3 IN PROGRESS: grounded generation and provider routing implemented; local tests pass. Live end-to-end /api/ask verification has NOT occurred. Do not mark Stage 3 passed. Stages 4–10 remain pending. No production frontend or app deployment is verified.
+Stage 3 IN PROGRESS: grounded generation and provider routing implemented; local tests pass. Live /api/ask smoke verification now includes one supported generated answer, one provider failure with evidence-only fallback, and one unsupported question whose uncited output was withheld. Do not mark Stage 3 passed. Stages 4–10 remain pending. No production frontend or app deployment is verified.
 
 ## Branch and publishing
 Repository: DPmalaviya/NOVAOPS-AI. Base feature branch: feat/stage-1-foundation, remote base ccf401a8f7fe99bd11edcb99313abfce2b07d247. Local Stage 2 commit 3f5b3a9 has the same tree as that remote base, verified by git diff. This checkpoint is published on feat/agent-handoff-stage3, branched from the remote base; never push to main. Use git log to find this checkpoint's eventual commit ID rather than relying on a self-referential SHA in this file.
@@ -57,3 +57,12 @@ Add a provider regression test that mocks Gemini generateContent parts containin
 
 ## Required update template after each stage
 Date and branch; stage/status; completed work; modified files; decisions; commands and actual results (separate mocks from live); blockers; pending tasks; exact next action; publishing confirmation or explicit failure. Update this file and BUILD_STATUS.md together. Never erase prior acceptance evidence or mark blocked work complete.
+
+## Stage 3 live checkpoint — October 8, 2026
+Modified files this phase: providers.test.ts, main.tsx, BUILD_STATUS.md, this handoff, docs/verification/stage3-smoke/.
+Added five provider regression cases: Gemini ordinary/thought text parsing; 401, 429 and 503 fallback with no retry; timeout fallback. These use mocks, not live Gemini access. Changed answer heading to SOURCE-CITED ANSWER to avoid implying marker validation proves grounding.
+Temporary novaops-ai-stage3-smoke Worker was deployed using existing DB/VECTOR/AI bindings. Health returned HTTP 200. Query “How does semantic retrieval work in NovaOps?” returned mode generated with answer “Semantic retrieval in NovaOps uses an embedding of the question and performs a cosine vector search across chunk embeddings [1].” Citation [1] mapped to sample-rag-principles-0000 and supported this claim. Provider was Workers AI Gemma; generation latency 2675 ms, total HTTP time 3.649441 seconds. These are single-request observations, not benchmarks.
+Earlier supported query returned a provider failure and correctly preserved real evidence without an answer. France-capital question returned evidence-only because generated output had no valid markers; explicit insufficient-evidence state is still pending. Raw sanitized synthetic outputs are retained in docs/verification/stage3-smoke/.
+Smoke cleanup: disabled and deleted the newly created Worker, both API operations HTTP 200; list scripts returned empty. Existing D1/Vectorize resources were NOT deleted. No production app was deployed and no billing settings were changed.
+Stage 3 remains IN PROGRESS: one supported live answer is not broad reliability/grounding acceptance. Frontend behavioral/browser tests remain absent. Gemini/Ollama live access remains unverified.
+Exact next action: add a structured insufficient-evidence response contract and test it with supported/unsupported cases, then add frontend behavior tests. Do not treat a model abstention as a citation failure. Follow with a multi-case grounding evaluation before declaring Stage 3 PASSED.

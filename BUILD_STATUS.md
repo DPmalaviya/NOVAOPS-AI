@@ -55,8 +55,8 @@ Known semantic questions retrieved the intended real sample source chunk through
 
 - Implemented /api/ask, provider routing, final-answer-only parsing and evidence citation marker checks.
 - Gemini requires explicit model/key; optional Ollama requires model/key. Neither is live-verified.
-- Workers AI fallback is implemented; new /api/ask route has not been smoke-tested live.
-- Latest local checks: lint, typecheck, 12 tests, build and diff check passed. Frontend has no behavioral tests.
+- Workers AI fallback is implemented; live /api/ask smoke produced a supported source-cited answer and safe evidence-only responses.
+- Latest local checks: lint, typecheck, 17 tests, build and diff check passed. Frontend has no behavioral tests.
 - Citation marker validation is not claim-level grounding verification.
 - See docs/AI_HANDOFF.md for resource IDs, modified files, blockers and exact resumption action.
 
@@ -64,3 +64,10 @@ Known semantic questions retrieved the intended real sample source chunk through
 **Status:** NOT STARTED
 
 No generation, uploads, GitHub synchronization, research synthesis, evaluation metrics, performance claims or production deployment is claimed as complete.
+
+### Stage 3 live checkpoint
+- Temporary Worker health: 200. Supported semantic-retrieval question: generated answer with [1] mapped to the correct D1 excerpt, total 3.649441 seconds for one request.
+- Provider failure safely returned evidence only; unsupported France-capital question had uncited output withheld.
+- Worker disabled/deleted afterward; scripts listing empty. No production deployment.
+- Added Gemini parsing and 401/429/503/timeout mock tests. Explicit insufficient-evidence semantics and frontend tests remain pending.
+- Sanitized live outputs: docs/verification/stage3-smoke/.
