@@ -42,4 +42,5 @@ A stage is PASSED only with executed evidence, quoted below.
 
 ## Stage 10 — Portfolio release: IN PROGRESS (deployment BLOCKED on owner accounts)
 - Done: production UI, responsive layout, README with real metrics, architecture diagram, docs set, portfolio description, resume bullets, interview prep (docs/PORTFOLIO.md, docs/INTERVIEW.md).
+- Screenshots: pending the public URL — the automation browser runs remotely and cannot reach a localhost dev server (verified 2026-10-08); capture them from the deployed site.
 - BLOCKED: public deployed URL requires the owner's Cloudflare account (Workers/D1/Vectorize provisioning + `wrangler deploy`) and a Gemini API key as a Worker secret. Step-by-step commands are in docs/DEPLOYMENT.md. Nothing in the code blocks deployment.
