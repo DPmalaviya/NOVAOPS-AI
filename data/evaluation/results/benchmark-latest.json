@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-10-09T03:51:07.572Z",
+  "embedder": "transformers-local:Xenova/bge-small-en-v1.5 (384d)",
+  "documents": 8,
+  "chunks": 23,
+  "fullIndexMs": 1692,
+  "chunksPerMinute": 816,
+  "incrementalReindexMs": 7,
+  "incrementalSkipped": "8/8",
+  "retrievalMs": {
+    "min": 5,
+    "median": 7,
+    "max": 27,
+    "samples": 15
+  },
+  "perFile": [
+    {
+      "file": "architecture.md",
+      "chunks": 4,
+      "parseMs": 0,
+      "chunkMs": 1,
+      "embedMs": 912,
+      "indexMs": 1,
+      "totalMs": 917
+    },
+    {
+      "file": "evaluation.md",
+      "chunks": 4,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 95,
+      "indexMs": 0,
+      "totalMs": 97
+    },
+    {
+      "file": "ingestion.md",
+      "chunks": 3,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 222,
+      "indexMs": 0,
+      "totalMs": 223
+    },
+    {
+      "file": "provider-routing.md",
+      "chunks": 4,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 169,
+      "indexMs": 0,
+      "totalMs": 170
+    },
+    {
+      "file": "release-notes.txt",
+      "chunks": 1,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 43,
+      "indexMs": 0,
+      "totalMs": 44
+    },
+    {
+      "file": "retrieval-guide.md",
+      "chunks": 3,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 59,
+      "indexMs": 0,
+      "totalMs": 60
+    },
+    {
+      "file": "sample-metrics.csv",
+      "chunks": 1,
+      "parseMs": 0,
+      "chunkMs": 1,
+      "embedMs": 59,
+      "indexMs": 0,
+      "totalMs": 60
+    },
+    {
+      "file": "security.md",
+      "chunks": 3,
+      "parseMs": 0,
+      "chunkMs": 0,
+      "embedMs": 97,
+      "indexMs": 0,
+      "totalMs": 98
+    }
+  ]
+}

@@ -1,0 +1,648 @@
+{
+  "generatedAt": "2026-10-09T03:51:04.161Z",
+  "embedder": "transformers-local:Xenova/bge-small-en-v1.5 (384d)",
+  "dataset": "data/evaluation/questions.json",
+  "corpus": [
+    "architecture.md",
+    "evaluation.md",
+    "ingestion.md",
+    "provider-routing.md",
+    "release-notes.txt",
+    "retrieval-guide.md",
+    "sample-metrics.csv",
+    "security.md"
+  ],
+  "runs": [
+    {
+      "chunkPreset": "small",
+      "topK": 3,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 12.485714285714286,
+      "chunks": 23,
+      "indexMs": 2928
+    },
+    {
+      "chunkPreset": "small",
+      "topK": 5,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 13.057142857142857,
+      "chunks": 23,
+      "indexMs": 2928
+    },
+    {
+      "chunkPreset": "small",
+      "topK": 8,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 11.82857142857143,
+      "chunks": 23,
+      "indexMs": 2928
+    },
+    {
+      "chunkPreset": "medium",
+      "topK": 3,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 10.314285714285715,
+      "chunks": 23,
+      "indexMs": 954
+    },
+    {
+      "chunkPreset": "medium",
+      "topK": 5,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 10.971428571428572,
+      "chunks": 23,
+      "indexMs": 954
+    },
+    {
+      "chunkPreset": "medium",
+      "topK": 8,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 10.885714285714286,
+      "chunks": 23,
+      "indexMs": 954
+    },
+    {
+      "chunkPreset": "large",
+      "topK": 3,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 11.82857142857143,
+      "chunks": 23,
+      "indexMs": 888
+    },
+    {
+      "chunkPreset": "large",
+      "topK": 5,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 11.657142857142857,
+      "chunks": 23,
+      "indexMs": 888
+    },
+    {
+      "chunkPreset": "large",
+      "topK": 8,
+      "hitRateAtK": 0.9714285714285714,
+      "mrr": 0.8888888888888888,
+      "noAnswer": "5/5",
+      "meanRetrievalMs": 11.485714285714286,
+      "chunks": 23,
+      "indexMs": 888
+    }
+  ],
+  "best": {
+    "chunkPreset": "small",
+    "topK": 3,
+    "hitRateAtK": 0.9714285714285714,
+    "mrr": 0.8888888888888888,
+    "noAnswer": "5/5",
+    "meanRetrievalMs": 12.485714285714286,
+    "chunks": 23,
+    "indexMs": 2928
+  },
+  "baseline": {
+    "cases": 35,
+    "topK": 5,
+    "hitRateAtK": 0.9714285714285714,
+    "meanReciprocalRank": 0.8888888888888888,
+    "noAnswerCases": 5,
+    "noAnswerCorrect": 5,
+    "meanRetrievalMs": 10.971428571428572,
+    "byCategory": {
+      "factual": {
+        "cases": 20,
+        "hitRate": 0.95
+      },
+      "cross-document": {
+        "cases": 3,
+        "hitRate": 1
+      },
+      "no-answer": {
+        "cases": 5,
+        "hitRate": 1
+      },
+      "confusion": {
+        "cases": 2,
+        "hitRate": 1
+      },
+      "injection": {
+        "cases": 2,
+        "hitRate": 1
+      },
+      "ambiguous": {
+        "cases": 2,
+        "hitRate": 1
+      },
+      "adversarial": {
+        "cases": 1,
+        "hitRate": 1
+      }
+    },
+    "results": [
+      {
+        "id": "q01",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7916568964116685,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "provider-routing.md",
+          "ingestion.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q02",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7067971292507622,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "architecture.md",
+          "security.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q03",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6926075952394105,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "provider-routing.md",
+          "sample-metrics.csv",
+          "release-notes.txt"
+        ]
+      },
+      {
+        "id": "q04",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8037302202006003,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "provider-routing.md",
+          "architecture.md",
+          "evaluation.md"
+        ]
+      },
+      {
+        "id": "q05",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8283943364706798,
+        "retrievedSources": [
+          "ingestion.md",
+          "security.md",
+          "sample-metrics.csv",
+          "architecture.md",
+          "ingestion.md"
+        ]
+      },
+      {
+        "id": "q06",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8309182629120322,
+        "retrievedSources": [
+          "ingestion.md",
+          "release-notes.txt",
+          "architecture.md",
+          "retrieval-guide.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q07",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7915528018962432,
+        "retrievedSources": [
+          "ingestion.md",
+          "ingestion.md",
+          "security.md",
+          "release-notes.txt",
+          "security.md"
+        ]
+      },
+      {
+        "id": "q08",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6973620168977064,
+        "retrievedSources": [
+          "ingestion.md",
+          "ingestion.md",
+          "security.md",
+          "security.md",
+          "security.md"
+        ]
+      },
+      {
+        "id": "q09",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6104565066692936,
+        "retrievedSources": [
+          "architecture.md",
+          "evaluation.md",
+          "evaluation.md",
+          "security.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q10",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7254631292261075,
+        "retrievedSources": [
+          "architecture.md",
+          "ingestion.md",
+          "provider-routing.md",
+          "release-notes.txt",
+          "retrieval-guide.md"
+        ]
+      },
+      {
+        "id": "q11",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8422112991092436,
+        "retrievedSources": [
+          "evaluation.md",
+          "evaluation.md",
+          "architecture.md",
+          "retrieval-guide.md",
+          "retrieval-guide.md"
+        ]
+      },
+      {
+        "id": "q12",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8166649941821614,
+        "retrievedSources": [
+          "evaluation.md",
+          "evaluation.md",
+          "architecture.md",
+          "evaluation.md",
+          "retrieval-guide.md"
+        ]
+      },
+      {
+        "id": "q13",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7583185318084367,
+        "retrievedSources": [
+          "security.md",
+          "security.md",
+          "ingestion.md",
+          "architecture.md",
+          "retrieval-guide.md"
+        ]
+      },
+      {
+        "id": "q14",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7908892152691854,
+        "retrievedSources": [
+          "security.md",
+          "architecture.md",
+          "security.md",
+          "security.md",
+          "ingestion.md"
+        ]
+      },
+      {
+        "id": "q15",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8281212633377935,
+        "retrievedSources": [
+          "retrieval-guide.md",
+          "evaluation.md",
+          "architecture.md",
+          "architecture.md",
+          "ingestion.md"
+        ]
+      },
+      {
+        "id": "q16",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.8641422480785028,
+        "retrievedSources": [
+          "retrieval-guide.md",
+          "retrieval-guide.md",
+          "architecture.md",
+          "provider-routing.md",
+          "evaluation.md"
+        ]
+      },
+      {
+        "id": "q17",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 2,
+        "topScore": 0.7837307153792544,
+        "retrievedSources": [
+          "architecture.md",
+          "retrieval-guide.md",
+          "retrieval-guide.md",
+          "security.md",
+          "evaluation.md"
+        ]
+      },
+      {
+        "id": "q18",
+        "category": "factual",
+        "hitAtK": false,
+        "expectedRank": null,
+        "topScore": 0.6523000398841412,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "architecture.md",
+          "security.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q19",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6667625986533061,
+        "retrievedSources": [
+          "release-notes.txt",
+          "security.md",
+          "security.md",
+          "provider-routing.md",
+          "security.md"
+        ]
+      },
+      {
+        "id": "q20",
+        "category": "factual",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7979841451896839,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "ingestion.md",
+          "provider-routing.md",
+          "evaluation.md"
+        ]
+      },
+      {
+        "id": "q21",
+        "category": "cross-document",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7825956819797928,
+        "retrievedSources": [
+          "evaluation.md",
+          "retrieval-guide.md",
+          "architecture.md",
+          "evaluation.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q22",
+        "category": "cross-document",
+        "hitAtK": true,
+        "expectedRank": 2,
+        "topScore": 0.6283502079690828,
+        "retrievedSources": [
+          "security.md",
+          "architecture.md",
+          "evaluation.md",
+          "architecture.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q23",
+        "category": "cross-document",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7059076758214705,
+        "retrievedSources": [
+          "ingestion.md",
+          "security.md",
+          "ingestion.md",
+          "release-notes.txt",
+          "security.md"
+        ]
+      },
+      {
+        "id": "q24",
+        "category": "no-answer",
+        "hitAtK": true,
+        "expectedRank": null,
+        "topScore": 0.3826865721499291,
+        "retrievedSources": [
+          "sample-metrics.csv",
+          "provider-routing.md",
+          "security.md",
+          "retrieval-guide.md",
+          "retrieval-guide.md"
+        ]
+      },
+      {
+        "id": "q25",
+        "category": "no-answer",
+        "hitAtK": true,
+        "expectedRank": null,
+        "topScore": 0.39979210487962313,
+        "retrievedSources": [
+          "retrieval-guide.md",
+          "architecture.md",
+          "sample-metrics.csv",
+          "ingestion.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q26",
+        "category": "no-answer",
+        "hitAtK": true,
+        "expectedRank": null,
+        "topScore": 0.3512660591173265,
+        "retrievedSources": [
+          "provider-routing.md",
+          "retrieval-guide.md",
+          "evaluation.md",
+          "evaluation.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q27",
+        "category": "no-answer",
+        "hitAtK": true,
+        "expectedRank": null,
+        "topScore": 0.4203879177484178,
+        "retrievedSources": [
+          "retrieval-guide.md",
+          "provider-routing.md",
+          "evaluation.md",
+          "sample-metrics.csv",
+          "evaluation.md"
+        ]
+      },
+      {
+        "id": "q28",
+        "category": "no-answer",
+        "hitAtK": true,
+        "expectedRank": null,
+        "topScore": 0.44438857138914256,
+        "retrievedSources": [
+          "evaluation.md",
+          "provider-routing.md",
+          "release-notes.txt",
+          "architecture.md",
+          "ingestion.md"
+        ]
+      },
+      {
+        "id": "q29",
+        "category": "confusion",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7841969072747695,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "provider-routing.md",
+          "provider-routing.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q30",
+        "category": "confusion",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.7657399899578914,
+        "retrievedSources": [
+          "retrieval-guide.md",
+          "retrieval-guide.md",
+          "provider-routing.md",
+          "ingestion.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q31",
+        "category": "injection",
+        "hitAtK": true,
+        "expectedRank": 3,
+        "topScore": 0.5696374454131372,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "security.md",
+          "security.md",
+          "release-notes.txt"
+        ]
+      },
+      {
+        "id": "q32",
+        "category": "injection",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6480047738358193,
+        "retrievedSources": [
+          "security.md",
+          "ingestion.md",
+          "release-notes.txt",
+          "provider-routing.md",
+          "provider-routing.md"
+        ]
+      },
+      {
+        "id": "q33",
+        "category": "ambiguous",
+        "hitAtK": true,
+        "expectedRank": 3,
+        "topScore": 0.5250871975908616,
+        "retrievedSources": [
+          "provider-routing.md",
+          "provider-routing.md",
+          "architecture.md",
+          "retrieval-guide.md",
+          "ingestion.md"
+        ]
+      },
+      {
+        "id": "q34",
+        "category": "ambiguous",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.5644965932701485,
+        "retrievedSources": [
+          "security.md",
+          "ingestion.md",
+          "security.md",
+          "provider-routing.md",
+          "architecture.md"
+        ]
+      },
+      {
+        "id": "q35",
+        "category": "adversarial",
+        "hitAtK": true,
+        "expectedRank": 1,
+        "topScore": 0.6705941763965154,
+        "retrievedSources": [
+          "security.md",
+          "ingestion.md",
+          "release-notes.txt",
+          "security.md",
+          "provider-routing.md"
+        ]
+      }
+    ]
+  }
+}
