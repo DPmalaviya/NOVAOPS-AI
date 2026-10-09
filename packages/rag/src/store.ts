@@ -84,11 +84,32 @@ CREATE TABLE IF NOT EXISTS query_log (
 CREATE TABLE IF NOT EXISTS kv_store (key TEXT PRIMARY KEY, value TEXT);
 `;
 
+/** Columns each table must have; used to self-heal pre-existing tables created
+ * by older/partial schemas (CREATE TABLE IF NOT EXISTS alone does not add
+ * missing columns, which otherwise breaks every insert in production). */
+const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
+  documents: { filename: 'TEXT', source: 'TEXT', source_ref: 'TEXT', source_version: 'TEXT', mime: 'TEXT', size_bytes: 'INTEGER', state: 'TEXT', error: 'TEXT', chunk_count: 'INTEGER', content_hash: 'TEXT', indexed_at: 'TEXT', created_at: 'TEXT' },
+  chunks: { document_id: 'TEXT', idx: 'INTEGER', text: 'TEXT', heading: 'TEXT', page: 'INTEGER', start_line: 'INTEGER', end_line: 'INTEGER', content_hash: 'TEXT' },
+  sync_runs: { repo: 'TEXT', branch: 'TEXT', started_at: 'TEXT', finished_at: 'TEXT', added: 'INTEGER', updated: 'INTEGER', skipped: 'INTEGER', deleted: 'INTEGER', failed: 'INTEGER', errors: 'TEXT', status: 'TEXT' },
+  provider_attempts: { provider: 'TEXT', model: 'TEXT', ok: 'INTEGER', latency_ms: 'INTEGER', error_category: 'TEXT', at: 'TEXT' },
+  query_log: { question: 'TEXT', provider: 'TEXT', retrieval_ms: 'INTEGER', generation_ms: 'INTEGER', total_ms: 'INTEGER', insufficient: 'INTEGER', created_at: 'TEXT' },
+  kv_store: { value: 'TEXT' },
+};
+
 export class D1Store implements MetadataStore {
   readonly kind = 'd1';
   constructor(private db: any) {}
   async init(): Promise<void> {
     for (const stmt of D1_SCHEMA.split(';').map((s) => s.trim()).filter(Boolean)) await this.db.prepare(stmt).run();
+    // Self-heal: add any columns missing from pre-existing tables.
+    for (const [table, cols] of Object.entries(EXPECTED_COLUMNS)) {
+      const { results } = await this.db.prepare(`PRAGMA table_info(${table})`).all();
+      const existing = new Set((results ?? []).map((r: any) => r.name));
+      if (existing.size === 0) continue;
+      for (const [col, type] of Object.entries(cols)) {
+        if (!existing.has(col)) await this.db.prepare(`ALTER TABLE ${table} ADD COLUMN ${col} ${type}`).run();
+      }
+    }
   }
   private rowToDoc(r: any): DocumentRecord {
     return {
