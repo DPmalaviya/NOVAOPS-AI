@@ -1,0 +1,22 @@
+{
+  "name": "novaops-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:api": "npm run dev -w @novaops/worker",
+    "dev:web": "npm run dev -w @novaops/web",
+    "build": "npm run build -w @novaops/shared -w @novaops/rag -w @novaops/worker -w @novaops/web",
+    "typecheck": "tsc -b packages/shared packages/rag apps/worker apps/web",
+    "test": "vitest run",
+    "eval": "tsx scripts/run-eval.ts",
+    "bench": "tsx scripts/run-bench.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "tsx": "^4.19.2"
+  },
+  "engines": { "node": ">=20" }
+}

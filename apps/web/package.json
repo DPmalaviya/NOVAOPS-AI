@@ -1,0 +1,4 @@
+{ "name": "@novaops/web", "version": "1.0.0", "type": "module", "private": true,
+  "scripts": { "dev": "vite", "build": "tsc -p tsconfig.json && vite build", "preview": "vite preview" },
+  "dependencies": { "react": "^18.3.1", "react-dom": "^18.3.1" },
+  "devDependencies": { "@vitejs/plugin-react": "^4.3.4", "vite": "^6.0.7", "@types/react": "^18.3.17", "@types/react-dom": "^18.3.5" } }

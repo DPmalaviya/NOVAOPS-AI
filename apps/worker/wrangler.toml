@@ -1,0 +1,29 @@
+name = "novaops-ai-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Bindings to provision (see docs/DEPLOYMENT.md):
+#   wrangler d1 create novaops
+#   wrangler vectorize create novaops-index --dimensions=768 --metric=cosine
+# The Workers AI embedder (bge-base) produces 768 dimensions.
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "novaops"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "novaops-index"
+
+[vars]
+EMBEDDER = "workers-ai"
+GEMINI_MODEL = "gemini-2.5-flash"
+WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8-fast"
+OLLAMA_MODEL = "nemotron-3-nano"
+# Secrets — set with wrangler secret put, never in this file:
+#   GEMINI_API_KEY, OLLAMA_API_KEY, GITHUB_TOKEN (optional)

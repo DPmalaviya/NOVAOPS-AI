@@ -1,0 +1,4 @@
+NovaOps AI sample release notes (synthetic demonstration document).
+
+Version 1 focuses on the core RAG experience: document upload, public GitHub sync, grounded chat with citations, a research workflow, and an evaluation page.
+The release deliberately excludes billing, Google Drive sync, Slack integration, and multi-tenant enterprise permissions. Those are documented as possible future versions.

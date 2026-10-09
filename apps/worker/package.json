@@ -1,0 +1,4 @@
+{ "name": "@novaops/worker", "version": "1.0.0", "type": "module", "private": true,
+  "scripts": { "build": "tsc -p tsconfig.json", "dev": "tsx watch src/server.ts", "start": "tsx src/server.ts", "deploy": "wrangler deploy" },
+  "dependencies": { "@novaops/shared": "*", "@novaops/rag": "*" },
+  "devDependencies": { "wrangler": "^3.99.0" } }

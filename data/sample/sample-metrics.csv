@@ -1,0 +1,7 @@
+metric,value,unit,notes
+sample_documents,6,count,Documents in the bundled sample corpus
+supported_formats,5,count,PDF DOCX TXT Markdown CSV
+max_file_size_mb,10,MB,Public upload limit per file
+max_files_per_session,5,count,Public upload limit per anonymous session
+provider_count,3,count,Gemini Workers AI and Ollama Cloud
+fallback_levels,4,count,Three providers plus retrieval-only
