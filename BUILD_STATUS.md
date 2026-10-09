@@ -83,3 +83,10 @@ No generation, uploads, GitHub synchronization, research synthesis, evaluation m
 - Created 25 labeled synthetic cases and a bounded stdlib Python endpoint evaluator.
 - Dataset validation and six Python evaluator tests passed; existing 25 application tests and local acceptance checks passed.
 - Live dataset evaluation NOT EXECUTED; no accuracy or broad grounding result claimed.
+
+### Live synthetic evaluation results
+- All 25 cases executed after readiness, HTTP 200; 10/10 supported answers emitted with correct source mappings and supporting excerpts.
+- Nine explicit abstentions; six generation failures safely degraded to evidence-only. Expected-mode matches 19/25.
+- No unsupported answer emitted. Adversarial resilience is NOT established because all five adversarial cases hit generator failures.
+- AI qualitative review only; not independent human review or broad accuracy. Evidence at docs/verification/stage3-evaluation/.
+- Temporary Worker removed; no billing changes. Stage 3 remains IN PROGRESS.
