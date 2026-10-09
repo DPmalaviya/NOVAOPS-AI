@@ -132,7 +132,7 @@ function Workspace() {
     setMessages((m) => [...m, { role: 'user', text: question }]);
     setInput('');
     try {
-      const result = await api<QueryResult>('/api/query', { method: 'POST', body: JSON.stringify({ question, topK: 5 }) });
+      const result = await api<QueryResult>('/api/query', { method: 'POST', body: JSON.stringify({ question, topK: 8 }) });
       setMessages((m) => [...m, { role: 'assistant', text: '', result }]);
       setEvidence(result.evidence); setActiveEv(0);
     } catch (e) {
